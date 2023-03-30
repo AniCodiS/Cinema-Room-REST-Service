@@ -45,15 +45,15 @@ public class CinemaController {
             return ResponseEntity.status(400).body(jsonString);
         }
 
-        int prevTicketNum = this.newCinema.getPurchasedTicketsNum();
-        this.newCinema.setPurchasedTicketsNum(prevTicketNum + 1);
-        int prevIncome = this.newCinema.getCurrentIncome();
-        this.newCinema.setCurrentIncome(prevIncome + requestSeat.getPrice());
-        int prevAvailableSeats = this.newCinema.getAvailableSeatsNum();
-        this.newCinema.setAvailableSeatsNum(prevAvailableSeats - 1);
+        int prevTicketNum = newCinema.getPurchasedTicketsNum();
+        newCinema.setPurchasedTicketsNum(prevTicketNum + 1);
+        int prevIncome = newCinema.getCurrentIncome();
+        newCinema.setCurrentIncome(prevIncome + requestSeat.getPrice());
+        int prevAvailableSeats = newCinema.getAvailableSeatsNum();
+        newCinema.setAvailableSeatsNum(prevAvailableSeats - 1);
 
         Purchase newPurchase = new Purchase(requestSeat);
-        this.newCinema.addToTokens(newPurchase.getToken(), requestSeat);
+        newCinema.addToTokens(newPurchase.getToken(), requestSeat);
         return ResponseEntity.ok(newPurchase.toJson());
     }
 
@@ -62,8 +62,8 @@ public class CinemaController {
         Map<UUID, Seat> tokens = this.newCinema.getTokens();
         if (tokens.containsKey(token.getToken())) {
             Seat currentSeat = tokens.get(token.getToken());
-            this.newCinema.removeFromToken(token.getToken());
-            ArrayList<Seat> availableSeats = this.newCinema.getAvailableSeats();
+            newCinema.removeFromToken(token.getToken());
+            ArrayList<Seat> availableSeats = newCinema.getAvailableSeats();
             for (Seat seat : availableSeats) {
                 if (seat.getRow() == currentSeat.getRow() && seat.getColumn() == currentSeat.getColumn()) {
                     seat.setAvailable(true);
@@ -71,12 +71,12 @@ public class CinemaController {
                 }
             }
 
-            int prevTicketNum = this.newCinema.getPurchasedTicketsNum();
-            this.newCinema.setPurchasedTicketsNum(prevTicketNum - 1);
-            int prevIncome = this.newCinema.getCurrentIncome();
-            this.newCinema.setCurrentIncome(prevIncome - currentSeat.getPrice());
-            int prevAvailableSeats = this.newCinema.getAvailableSeatsNum();
-            this.newCinema.setAvailableSeatsNum(prevAvailableSeats + 1);
+            int prevTicketNum = newCinema.getPurchasedTicketsNum();
+            newCinema.setPurchasedTicketsNum(prevTicketNum - 1);
+            int prevIncome = newCinema.getCurrentIncome();
+            newCinema.setCurrentIncome(prevIncome - currentSeat.getPrice());
+            int prevAvailableSeats = newCinema.getAvailableSeatsNum();
+            newCinema.setAvailableSeatsNum(prevAvailableSeats + 1);
 
             ReturnedTicket returnedTicket = new ReturnedTicket(currentSeat);
             return ResponseEntity.ok(returnedTicket.toJson());
@@ -91,9 +91,9 @@ public class CinemaController {
         if (password == null || !password.equals("super_secret")) {
             return ResponseEntity.status(401).body("{\"error\": \"The password is wrong!\"}");
         }
-        int currentIncome = this.newCinema.getCurrentIncome();
-        int purchasedTickets = this.newCinema.getPurchasedTicketsNum();
-        int availableSeatsNum = this.newCinema.getAvailableSeatsNum();
+        int currentIncome = newCinema.getCurrentIncome();
+        int purchasedTickets = newCinema.getPurchasedTicketsNum();
+        int availableSeatsNum = newCinema.getAvailableSeatsNum();
         Statistics newStats = new Statistics(currentIncome, availableSeatsNum, purchasedTickets);
         return ResponseEntity.ok(newStats.toJson());
     }
